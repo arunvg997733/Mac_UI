@@ -5,6 +5,20 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 class HomeController extends GetxController {
   RxDouble iconSize = 50.0.obs;
 
+  Rx<List<double>> posionlist = Rx([]);
+
+  getLeft(int length) {
+    for (int i = 0; i < length; i++) {
+      if (i == 0) {
+        posionlist.value.add(20);
+      } else {
+        double a = 20.h + (iconSize.value.h * i);
+        posionlist.value.add(a);
+      }
+    }
+    print(posionlist);
+  }
+
   // getIconSize(int length, double screenWidth) {
 
   // }
@@ -13,7 +27,7 @@ class HomeController extends GetxController {
     print("Icon size ------------- ${screenWidth} ");
     if (length <= 0) return 0;
 
-    double totalSpacing = length * 20.h;
+    double totalSpacing = (length * 20.h) + 20.h;
     double availableWidth = screenWidth - totalSpacing;
     double iconWidth = availableWidth / length;
 

@@ -9,11 +9,11 @@ class HomeScreen extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     controller.iconSize.value = controller.getIconSize(
-      10,
+      6,
       ScreenUtil().screenWidth,
     );
 
-    print("Icon size ------------- ${controller.iconSize.value} ");
+    controller.getLeft(6);
     return Scaffold(
       backgroundColor: Colors.lightBlue[50],
       body: GetX<HomeController>(
@@ -26,7 +26,7 @@ class HomeScreen extends GetView<HomeController> {
                   padding: EdgeInsets.all(10.h),
                   child: AnimatedContainer(
                     duration: Duration(milliseconds: 500),
-                    height: controller.iconSize.value.h + 20,
+                    height: controller.iconSize.value.h + 20.h,
                     decoration: BoxDecoration(
                       color: Colors.grey.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(15.h),
@@ -36,35 +36,42 @@ class HomeScreen extends GetView<HomeController> {
               ),
 
               IconWidget(
-                left: 20.h,
+                left: controller.posionlist.value[0],
                 top:
                     ScreenUtil().screenHeight -
                     controller.iconSize.value.h -
                     20.h,
               ),
               IconWidget(
-                left: 70.h,
+                left: controller.posionlist.value[1],
                 top:
                     ScreenUtil().screenHeight -
                     controller.iconSize.value.h -
                     20.h,
               ),
               IconWidget(
-                left: 120.h,
+                left: controller.posionlist.value[2],
                 top:
                     ScreenUtil().screenHeight -
                     controller.iconSize.value.h -
                     20.h,
               ),
               IconWidget(
-                left: 170.h,
+                left: controller.posionlist.value[3],
                 top:
                     ScreenUtil().screenHeight -
                     controller.iconSize.value.h -
                     20.h,
               ),
               IconWidget(
-                left: 220.h,
+                left: controller.posionlist.value[4],
+                top:
+                    ScreenUtil().screenHeight -
+                    controller.iconSize.value.h -
+                    20.h,
+              ),
+              IconWidget(
+                left: controller.posionlist.value[5],
                 top:
                     ScreenUtil().screenHeight -
                     controller.iconSize.value.h -
