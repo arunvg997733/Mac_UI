@@ -1,21 +1,121 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_rx/get_rx.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 
 class HomeController extends GetxController {
+  List<String> listNUmber = [
+    "apple",
+    "camera",
+    "messages",
+    "settings",
+    "photos",
+  ];
+  RxInt iconcount = 6.obs;
   RxDouble iconSize = 50.0.obs;
 
-  Rx<List<double>> posionlist = Rx([]);
+  Rx<List<Offset>> posionlist = Rx([]);
 
-  getLeft(int length) {
-    for (int i = 0; i < length; i++) {
-      if (i == 0) {
-        posionlist.value.add(20);
-      } else {
-        double a = 20.h + (iconSize.value.h * i);
-        posionlist.value.add(a);
+  getMovingLeft(int length, int index, Offset offset) {
+    posionlist.value = [];
+    print("jdasijdajoijdo  === working ${offset.dy}");
+    int intx = 0;
+    //for check is below the icon tab //
+    if (offset.dy < ScreenUtil().screenHeight - iconSize.value - 40.h) {
+      // work if over the icon tab //
+      for (int i = 0; i <= length; i++) {
+        if (i != index) {
+          double a = 30.w + (intx * 20).w + (iconSize.value * intx);
+
+          posionlist.value.add(
+            Offset(a, ScreenUtil().screenHeight - iconSize.value - 20.h),
+          );
+          intx++;
+        } else {
+          posionlist.value.add(offset);
+        }
+      }
+    } else {
+      // work if below the icon tab //
+      iconSize.value = getIconSize(iconcount.value, ScreenUtil().screenWidth);
+
+      int hoverInt = getSegmentIndex(offset.dx, 360, iconcount.value);
+
+      for (int i = 0; i <= length; i++) {
+        if (i != index) {
+          if (hoverInt > i && i > index) {
+            double a =
+                30.w +
+                (i * 20).w +
+                (iconSize.value * i) -
+                iconSize.value -
+                20.w;
+
+            posionlist.value.add(
+              Offset(a, ScreenUtil().screenHeight - iconSize.value - 20.h),
+            );
+          } else if (hoverInt - 2 < i && i < index) {
+            double a =
+                30.w +
+                (i * 20).w +
+                (iconSize.value * i) +
+                iconSize.value +
+                20.w;
+
+            posionlist.value.add(
+              Offset(a, ScreenUtil().screenHeight - iconSize.value - 20.h),
+            );
+          } else {
+            double a = 30.w + (i * 20).w + (iconSize.value * i);
+
+            posionlist.value.add(
+              Offset(a, ScreenUtil().screenHeight - iconSize.value - 20.h),
+            );
+          }
+        } else {
+          posionlist.value.add(offset);
+        }
       }
     }
+    posionlist.refresh();
+    print(
+      "jdasijdajfkfasoooijdo  === working ${getSegmentIndex(offset.dx, 360, 5)},,,,, index $index",
+    );
+  }
+
+  // swap(int value1, int value2) {
+  //   print("ashfdiu value 1 = $value1 , value 2 = $value2");
+  //   int tmp = value1;
+  //   value1 = value2;
+  //   value2 = tmp;
+  // }
+
+  int getSegmentIndex(double value, int totalWidth, int segmentCount) {
+    double segmentWidth = totalWidth / segmentCount;
+    int index = (value / segmentWidth).floor() + 1;
+
+    // Clamp to max segment
+    if (index > segmentCount) return segmentCount;
+    if (index < 1) return 1;
+    return index;
+  }
+
+  getLeft(int length) {
+    posionlist.value = [];
+    print("jdasijdajoijdo  === working");
+    for (int i = 0; i <= length; i++) {
+      if (i == 0) {
+        posionlist.value.add(
+          Offset(30.w, ScreenUtil().screenHeight - iconSize.value - 20.h),
+        );
+      } else {
+        double a = 30.w + (i * 20).w + (iconSize.value * i);
+        posionlist.value.add(
+          Offset(a, ScreenUtil().screenHeight - iconSize.value - 20.h),
+        );
+      }
+    }
+    posionlist.refresh();
     print(posionlist);
   }
 
@@ -24,12 +124,15 @@ class HomeController extends GetxController {
   // }
 
   double getIconSize(int length, double screenWidth) {
-    print("Icon size ------------- ${screenWidth} ");
     if (length <= 0) return 0;
 
-    double totalSpacing = (length * 20.h) + 20.h;
-    double availableWidth = screenWidth - totalSpacing;
+    double totalSpacing = (length * 20.w) + 20.w;
+    double availableWidth = screenWidth - 20.w - totalSpacing;
     double iconWidth = availableWidth / length;
+
+    print(
+      "Icon size ------------ ${iconWidth} screen width ${screenWidth}---- 20w = ${20.w} ",
+    );
 
     return iconWidth; // or .round() if you prefer
   }

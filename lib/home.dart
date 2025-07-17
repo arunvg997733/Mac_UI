@@ -4,89 +4,103 @@ import 'package:get/get.dart';
 import 'package:macui/controller/home_controller.dart';
 
 class HomeScreen extends GetView<HomeController> {
-  const HomeScreen({super.key});
+  HomeScreen({super.key});
+  // int count = 5;
 
   @override
   Widget build(BuildContext context) {
+    controller.iconcount.value = 5;
     controller.iconSize.value = controller.getIconSize(
-      6,
+      controller.iconcount.value,
       ScreenUtil().screenWidth,
     );
 
-    controller.getLeft(6);
+    controller.getLeft(controller.iconcount.value);
     return Scaffold(
       backgroundColor: Colors.lightBlue[50],
-      body: GetX<HomeController>(
-        builder: (controller1) {
-          return Stack(
-            children: [
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: EdgeInsets.all(10.h),
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 500),
-                    height: controller.iconSize.value.h + 20.h,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(15.h),
+
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/wallpaper.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: GetX<HomeController>(
+          builder: (controller1) {
+            return Stack(
+              children: [
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: EdgeInsets.all(10.w),
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 150),
+                      height: controller.iconSize.value + 20.h,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(15.h),
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              IconWidget(
-                left: controller.posionlist.value[0],
-                top:
-                    ScreenUtil().screenHeight -
-                    controller.iconSize.value.h -
-                    20.h,
-              ),
-              IconWidget(
-                left: controller.posionlist.value[1],
-                top:
-                    ScreenUtil().screenHeight -
-                    controller.iconSize.value.h -
-                    20.h,
-              ),
-              IconWidget(
-                left: controller.posionlist.value[2],
-                top:
-                    ScreenUtil().screenHeight -
-                    controller.iconSize.value.h -
-                    20.h,
-              ),
-              IconWidget(
-                left: controller.posionlist.value[3],
-                top:
-                    ScreenUtil().screenHeight -
-                    controller.iconSize.value.h -
-                    20.h,
-              ),
-              IconWidget(
-                left: controller.posionlist.value[4],
-                top:
-                    ScreenUtil().screenHeight -
-                    controller.iconSize.value.h -
-                    20.h,
-              ),
-              IconWidget(
-                left: controller.posionlist.value[5],
-                top:
-                    ScreenUtil().screenHeight -
-                    controller.iconSize.value.h -
-                    20.h,
-              ),
-            ],
-          );
-        },
+                Stack(
+                  children: List.generate(controller.iconcount.value, (index) {
+                    return IconWidget(
+                      onPanUpdate: (details) {
+                        print("kjdshfudhsufh -- ${details.delta.dx}");
+                        controller.posionlist.value[index] += details.delta;
+                        controller.iconSize.value = controller.getIconSize(
+                          controller.iconcount.value - 1,
+                          ScreenUtil().screenWidth,
+                        );
+                        controller.getMovingLeft(
+                          controller.iconcount.value,
+                          index,
+                          controller.posionlist.value[index],
+                        );
+
+                        controller.posionlist.refresh();
+                      },
+                      onPanEnd: (p0) {
+                        controller.iconSize.value = controller.getIconSize(
+                          controller.iconcount.value,
+                          ScreenUtil().screenWidth,
+                        );
+                        controller.getLeft(controller.iconcount.value);
+                        int hoverValue = controller.getSegmentIndex(
+                          p0.globalPosition.dx,
+                          360,
+                          controller.iconcount.value,
+                        );
+                        hoverValue--;
+
+                        final positionTemp = controller.posionlist.value[index];
+
+                        controller1.posionlist.value[index] =
+                            controller.posionlist.value[hoverValue];
+
+                        controller.posionlist.value[hoverValue] = positionTemp;
+                      },
+                      left: controller.posionlist.value[index].dx,
+                      top: controller.posionlist.value[index].dy,
+                      index,
+                    );
+                  }),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
 }
 
 class IconWidget extends GetView<HomeController> {
-  const IconWidget({
+  const IconWidget(
+    this.index, {
     super.key,
     required this.left,
     required this.top,
@@ -98,21 +112,26 @@ class IconWidget extends GetView<HomeController> {
   final double top;
   final Function(DragUpdateDetails)? onPanUpdate;
   final Function(DragEndDetails)? onPanEnd;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
     return AnimatedPositioned(
-      duration: Duration(milliseconds: 500),
+      duration: Duration(milliseconds: 150),
       left: left,
       top: top,
       child: GestureDetector(
         onPanUpdate: onPanUpdate,
         onPanEnd: onPanEnd,
         child: AnimatedContainer(
-          duration: Duration(milliseconds: 500),
-          height: controller.iconSize.value.h,
-          width: controller.iconSize.value.h,
-          child: Image.asset("assets/images/settings.png"),
+          duration: Duration(milliseconds: 150),
+          height: controller.iconSize.value,
+          width: controller.iconSize.value,
+          // color: Colors.amber,
+          child: Image.asset(
+            "assets/images/${controller.listNUmber[index]}.png",
+          ),
+          // child: Center(child: Text(controller.listNUmber[index].toString())),
         ),
       ),
     );
